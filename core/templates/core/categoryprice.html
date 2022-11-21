@@ -1,0 +1,73 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+<!-- breadcrumbs -->
+	<div class="breadcrumbs">
+		<div class="container">
+			<ol class="breadcrumb breadcrumb1 animated wow slideInLeft" data-wow-delay=".5s">
+				<li><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+				<li class="active">Packaged Foods</li>
+			</ol>
+		</div>
+	</div>
+<!-- //breadcrumbs -->
+<!--- pakagedfoods --->
+{% block content %}
+	<div class="products">
+		<div class="container">
+			{% if Lr_Upload %}
+			<h3> Upload_lr </h3>
+				<form method="POST" action="{% url 'lr_upload' object.id %}"  enctype="multipart/form-data">
+					{% csrf_token %}
+				<label for="Transport">Transport</label>
+				<select  name="Transport" id="Transport" required>
+					{% for address in transport_list %}
+					<option value="{{ address.id}}">{{ address.name }}</option>
+					{% endfor %}
+				</select>  
+				<br>
+				<input type="file" name="uploadFromPC" id="uploadFromPC" >
+				<br>
+						<input type ="submit" id="demo1" class="btn btn-primary"> 
+							</form>
+						</div>
+			{% else %}
+			<h3> Change Category Price </h3>
+					</br>
+				</br>
+			{% if category_price_changed %}
+			<h5> Price has Changed succesfully </h5>
+			{% endif %}
+			<div class="col-md-12 products">
+				<form method="POST" action="{% url 'category_price' %}">
+					{% csrf_token %}
+					<label for="Category">Category</label>
+					<select  name="Category" id="Category" required>
+						{% for category in category_list %}
+						<option value="{{ category.id}}">{{ category.name }}</option>
+                        {% endfor %}
+						</select> 
+					</br>
+				</br>
+              <label for="inputZip"> Price_type </label>
+              <select  name="Price_type" id="Price_type" required>
+				<option value=0>Regular Rate</option>
+				<option value=1>Box Rate</option>
+				</select> 
+			</br>
+		</br>
+              <label for="inputZip">Price</label>
+			  <input type="number" class="form-control" id="phone" name="price" maxlength="12" required>
+				</br>
+			</br>
+			  <input type ="submit" id="demo1" class="btn btn-primary"> 
+				</form>
+			</div>
+			{% endif %}
+			<div class="clearfix"> </div>
+			
+		</div>
+	</div>
+<!--- pakagedfoods --->
+{% endblock %}
+</body>
+</html>

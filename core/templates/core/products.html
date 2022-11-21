@@ -1,0 +1,316 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load index %}
+{% block head_content %}
+
+
+<style>
+	* {
+	  box-sizing: border-box;
+	}
+
+	/* Create two equal columns that floats next to each other */
+	.column {
+	  float: left;
+	  width: 100%;
+	  padding: 10px;
+	}
+
+	/* Clear floats after the columns */
+	.row:after {
+	  content: "";
+	  display: table;
+	  clear: both;
+	}
+	/* Style the buttons */
+	.btn {
+	  border: none;
+	  outline: none;
+	  padding: 12px 16px;
+	  background-color: ##e3310e;
+	  cursor: pointer;
+	}
+	#popcart
+	{
+	  border: none;
+	  outline: none;
+	  padding: 12px 16px;
+	  background-color: #f1f1f1;
+	  cursor: pointer;
+	}
+
+	.btn:hover {
+	  background-color: rgb(218, 23, 23);
+	}
+
+	.btn.active {
+	  background-color: #666;
+	  color: white;
+	}
+	.categories{
+
+		display: {% if category_page %} none {% else %} block {% endif %};
+	}
+	</style>
+    {% endblock %}
+
+{% block content %}
+
+<!-- breadcrumbs -->
+
+<!-- //breadcrumbs -->
+<!--- products --->
+	<div class="products">
+		<div class="container">
+			<div class="col-md-4 products-left">
+				<button type="button" style="color: black;float: center;" class="collapsible" ><strong>Product List </strong></button>
+				<div class="categories">
+					<h2>Categories</h2>
+
+					<ul class="cate">
+						{% for category in category_list %}
+
+						{% if category.parent %}
+						{% else %}
+						{% if category.children %}
+
+						<li><a href="{% url 'category-page' category.id %}"><i class="fa fa-arrow-right" aria-hidden="true"></i>{{category.name}}</a></li>
+							<ul>
+
+								{% for child in category.children.all %}
+								<li><a href="{% url 'category-page' child.id %}"><i class="fa fa-arrow-right" aria-hidden="true"></i>{{child.name}}</a></li>
+								{% if child.children %}
+								<ul>
+								{% for child_parent in child.children.all %}
+                                {% if category_page %}
+                                {% else %}
+								<a href="{% url 'category-page' child_parent.id %}"><img style="width: 70%;height: 70%" src="{{image_list|index:child_parent.id}}"></a>
+								{% endif %}
+								<li><h4><a href="{% url 'category-page' child_parent.id %}"><i class="fa fa-arrow-right" aria-hidden="true"></i>{{child_parent.name}}</a></h4></li>
+								{% endfor %}
+								</ul>
+								{% endif %}
+								{% endfor %}
+							</ul>
+						{% endif %}
+						{% endif %}
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-8 products-right">
+				<div class="products-right-grid">
+					<div class="products-right-grids">
+
+						<div class="sorting-left">
+							{% if request.user.userprofile.owner %}
+							{% if category_page %}
+
+							<a href="{% url 'add_to_share_category' category_page.id %}">Share all {{category.name}} Items</a>
+							{% endif %}
+							{% endif %}
+						</div>
+						<div id="btnContainer">
+							<button class="btn" onclick="listView()"><i class="fa fa-bars"></i> List</button>
+							<button class="btn active" onclick="gridView()"><i class="fa fa-th-large"></i> Grid</button>
+						  </div>
+						  <br>
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+
+				{% if object_list %}
+				<div class="row">
+				{% for object in object_list %}
+
+
+						<div class="hover14 column">
+							<div class="agile_top_brand_left_grid">
+								<div class="agile_top_brand_left_grid1">
+									<figure>
+										<div class="snipcart-item block">
+											<div class="snipcart-thumb">
+												<a href="{% url 'product-detail' object.id %}"><img class="new" title=" " alt=" " height="250" width="250" src="{% if object.image_url.all.0.image_confirm  %} {{object.image_url.all.0.image}}  {% else %} {{object.image.url}} {% endif %}"></a>
+												<p id="namepr{{object.id}}" >{{object.slug}}</p>
+											        	<p>Set of <span id="setpr{{object.id}}">{{object.set}}</span></p>
+												{% if request.user.userprofile.owner %}
+												<h4>{% if request.user.userprofile.rate_type %}{{ object.boxprice }} {% else %}
+													{{ object.price }} {% endif %} <span id="pricepr{{object.id}}"></span></h4>
+												{% elif request.user.userprofile.show_rate %}
+												<h4>{% if request.user.userprofile.rate_type %}{{ object.boxprice }} {% else %}
+													{{ object.price }} {% endif %} <span id="pricepr{{object.id}}"></span></h4>
+												{% endif %}
+
+											</div>
+											{% if request.user.userprofile.owner %}
+											<div class="snipcart-details top_brand_home_details">
+											<span id="share{{object.id}}" class="sharepr" name="{{object.title}}">
+												<button id="share{{object.id}}" class="btn btn-primary cart">Add To Share</button>
+											</span>
+										</div>
+											{% endif %}
+
+
+											<div class="snipcart-details top_brand_home_details">
+												<span id="divpr{{object.id}}" class="divpr" name="2">
+													<button id="pr{{object.id}}" class="btn btn-primary cart">Add To Cart</button>
+												</span>
+											</div>
+										</div>
+									</figure>
+								</div>
+							</div>
+						</div>
+
+
+
+				{% endfor %}
+			</div>
+			<div class="clearfix"> </div>
+
+
+				<nav class="numbering">
+
+				{% if object_list.has_other_pages %}
+					<ul class="pagination paging">
+						{% if object_list.has_previous %}
+						<li><a href="?page={{ object_list.previous_page_number }}">&laquo;</a></li>
+						{% else %}
+						<li class="disabled"><span>&laquo;</span></li>
+						{% endif %}
+						{% for i in object_list.paginator.page_range %}
+						{% if i < max and i > min and  i != object_list.number %}
+
+							<li><a href="?page={{ i }}">{{ i }}</a></li>
+						{% elif objest_list.number == i %}
+							<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+						{% endif %}
+						{% endfor %}
+						{% if object_list.has_next %}
+						<li><a href="?page={{ object_list.next_page_number }}">&raquo;</a></li>
+						{% else %}
+						<li class="disabled"><span>&raquo;</span></li>
+						{% endif %}
+					</ul>
+					{% endif %}
+				</nav>
+				</div>
+					{% else %}
+					{% if new__message %}
+					<h1> Welcome To <strong>Shree Shyam Silk Mills</strong></h1>
+                    <h4 class ="page-header page-header icon-subheading"> In Just a Single Phone Call You Can See Great Vareity of Design and Trends of Latest Fashions </h4>
+                    <h4> Just contact us  </h4></br>
+                    <ul>
+                    <li><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i><a href="tel:+919374713081">+919374713081</a>  <a href="https://wa.me/919374713081?text={{request.user}} requesting to Give Access"> Click Here to Send messages</a></li> </br>
+                    <li><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i><a href="tel:+919898069377">+919898069377</a>  <a href="https://wa.me/919898069377?text={{request.user}} requesting to Give Access"> Click Here to Send messages</a></li> </br>
+                    <li></li>
+                    </ul>
+					{% else %}
+					<h3> No Object Found </h3>
+					<a href="{% url 'product-list'  %}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Continue Shopping</a>
+					{% endif %}
+					{% endif %}
+
+
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+<!--- products --->
+{% if request.user.is_authenticated %}
+{% if object_list %}
+<div class="sticky1" id="demo">
+
+
+
+<a  onclick="myFunction()" style="color:white;font-size:16px"
+href="{% url 'order-summary' %}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span><strong>Buy Now(<span class="cartlength">0</span>)</strong></a>
+
+<script>
+function myFunction() {
+  document.getElementById("demo").style.background = "black";
+}
+</script>
+</div>
+	<div class="clearfix"> </div>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+
+{% block footer_scripts %}
+
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+
+	</script>
+
+
+<script>
+	var coll = document.getElementsByClassName("collapsible");
+	  coll[0].addEventListener("click", function() {
+		this.classList.toggle("active");
+		var content = this.nextElementSibling;
+		if (content.style.display === "block") {
+		  content.style.display = "none";
+		} else {
+		  content.style.display = "block";
+		}
+	  });
+	</script>
+
+<script>
+	// Get the elements with class="column"
+	var elements = document.getElementsByClassName("hover14 column");
+	var photo = document.getElementsByClassName("agile_top_brand_left_grid1");
+
+
+	// Declare a loop variable
+	var i;
+
+	// List View
+	function listView() {
+	  for (i = 0; i < elements.length; i++) {
+		elements[i].style.width = "100%";
+	  }
+	}
+
+	// Grid View
+	function gridView() {
+	  for (i = 0; i < elements.length; i++) {
+		elements[i].style.width = "50%";
+		photo[i].style.padding = "2px";
+		elements[i].style.height = "50%";
+		elements[i].style.padding = "2px";
+
+	  }
+	}
+
+	/* Optional: Add active class to the current button (highlight it) */
+	var container = document.getElementById("btnContainer");
+	var btns = container.getElementsByClassName("btn");
+	for (var i = 0; i < btns.length; i++) {
+	  btns[i].addEventListener("click", function() {
+		var current = document.getElementsByClassName("active");
+		current[0].className = current[0].className.replace(" active", "");
+		this.className += " active";
+	  });
+	}
+	</script>
+
+<!-- //main slider-banner -->
+{% endblock %}
+</body>
+</html>

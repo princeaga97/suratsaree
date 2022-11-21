@@ -1,0 +1,258 @@
+{% load static %}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Surat Saree | INDIA'S Best Sarees</title>
+<!-- for-mobile-apps -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+		function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //for-mobile-apps -->
+<link href="{% static 'css/bootstrap.css' %}" rel="stylesheet" type="text/css" media="all" />
+<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+<!-- font-awesome icons -->
+<link href="{% static 'css/font-awesome.css' %}" rel="stylesheet">
+<!-- //font-awesome icons -->
+<!-- js -->
+<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+<!-- //js -->
+<link href='//fonts.googleapis.com/css?family=Raleway:400,100,100italic,200,200italic,300,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+<!-- start-smoth-scrolling "-->
+<script type="text/javascript" src="{% static 'js/move-top.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/easing.js' %}"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function($) {
+		$(".scroll").click(function(event){
+			event.preventDefault();
+			$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+		});
+	});
+</script>
+<!-- start-smoth-scrolling -->
+</head>
+
+<body>
+<!-- header -->
+	<div class="agileits_header">
+		<div class="container">
+			<div class="agile-login">
+				{% if request.user.is_authenticated %}
+				<ul>
+					<li> {{request.user.username}} </li>
+				</ul>
+				</div>
+				<div class="product_list_header">
+					<a class="w3view-cart" href = "{% url 'order-summary' %}"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i></a>
+					<a class="w3view-cart" href = "{% url 'share-summary' %}"><i class="fa fa-share-alt" aria-hidden="true"></i></a>
+				</div>
+				{% else %}
+				<ul>
+					<li><a href="{% url  'accounts:sign_up' %}"> Create Account </a></li>
+					<li><a href="{% url  'accounts:log_in' %}">Login</a></li>
+				</ul>
+		</div>
+				{% endif %}
+
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+
+	<div class="logo_products">
+		<div class="container">
+		<div class="w3ls_logo_products_left1">
+				<ul class="phone_email">
+                    <li><i class="fa fa-phone" aria-hidden="true"></i>Order online or call us : +919377898938 </li>
+                    <br>
+                    <strong><li><i class="fa fa-university" aria-hidden="true"></i>GST NO 24APPPA5866A2Z2</li> </strong>
+
+				</ul>
+			</div>
+			<div class="w3ls_logo_products_left">
+				<h1><a href="{% url 'index' %}"><img src="{% static 'images/logo.jpeg' %}" class="img-fluid" width="100%"></a></h1>
+            </div>
+            {% if request.user.is_authenticated %}
+		<div class="w3l_search">
+			<form action="{% url 'search' %}" method="post">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <input type="search" name="search" placeholder="Search for a Product..." required="">
+				<button type="submit" class="btn btn-default search" aria-label="Left Align">
+					<i class="fa fa-search" aria-hidden="true"> </i>
+				</button>
+				<div class="clearfix"></div>
+			</form>
+        </div>
+        {% endif %}
+
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+<!-- //header -->
+<!-- navigation -->
+{% if request.user.is_authenticated %}
+
+	<div class="navigation-agileits">
+		<div class="container">
+			<nav class="navbar navbar-default">
+							<!-- Brand and toggle get grouped for better mobile display -->
+							<div class="navbar-header nav_2">
+								<button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+									<span class="sr-only">Toggle navigation</span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+								</button>
+							</div>
+							<div class="collapse navbar-collapse" id="bs-megadropdown-tabs">
+								<ul class="nav navbar-nav">
+									<li class="active"><a href="{% url 'index' %}" class="act">Home</a></li>
+									<!-- Mega Menu -->
+									{% for category in category_list %}
+									{% if category.parent %}
+									{% else %}
+									{% if category.children %}
+									<li class="dropdown">
+										<a href="{% url 'category-page' category.id %}" class="dropdown-toggle" data-toggle="dropdown">{{category.name}}<b class="caret"></b></a>
+										<ul class="dropdown-menu multi-column columns-3">
+											<div class="row">
+												<div class="multi-gd-img">
+													<ul class="multi-column-dropdown">
+														<h6>All {{category.name}} </h6>
+														{% for child in category.children.all %}
+														<li><a href="{% url 'category-page' child.id %}">{{child.name}}</a></li>
+														{% endfor %}
+													</ul>
+												</div>
+
+											</div>
+										</ul>
+									</li>
+									{% else %}
+									<li><a href="{% url 'category-page' category.id %}">{{category.name}}</a></li>
+									{% endif %}
+									{% endif %}
+									{% endfor %}
+								</ul>
+							</div>
+							</nav>
+			</div>
+		</div>
+{% endif %}
+<!-- //navigation -->
+
+
+
+    {% block content %}
+        No content.
+    {% endblock %}
+
+<!-- //footer -->
+<div class="footer">
+    <div class="container">
+        <div class="w3_footer_grids">
+            <div class="col-md-3 w3_footer_grid">
+
+                <h3>Contact</h3>
+
+
+                <ul class="address">
+                    <li><i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i>412-419 JD MARKET , <span> RING ROAD , SURAT</span></li>
+                    <li><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i><a href="mailto:info@example.com">info@example.com</a></li>
+                    <li><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i><a href="tel:+919374713081">+919374713081</a></li>
+                    <li><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i><a href="tel:+919377898938">+919377898938</a></li>
+                    <li><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i><a href="tel:+919898069377">+919898069377</a></li>
+
+
+                </ul>
+            </div>
+            {% if request.user.is_authenticated %}
+            <div class="col-md-3 w3_footer_grid">
+                <h3>Category</h3>
+                <ul class="info">
+                    <!-- Mega Menu -->
+									{% for category in category_list %}
+									{% if category.parent %}
+									{% else %}
+									{% if category.children %}
+                                    <li><i class="fa fa-arrow-right" aria-hidden="true"></i><a href="{% url 'category-page' category.id %}">{{category.name}}</a></li>
+									{% else %}
+									<li><a href="{% url 'category-page' category.id %}">{{category.name}}</a></li>
+									{% endif %}
+									{% endif %}
+									{% endfor %}
+
+                    </ul>
+            </div>
+            <div class="col-md-3 w3_footer_grid">
+                <h3>Profile</h3>
+                <ul class="info">
+                    <li><i class="fa fa-arrow-right" aria-hidden="true"></i><a href="{% url 'product-list' %}">Store</a></li>
+                    {% if present_order %}
+                    <li><i class="fa fa-arrow-right" aria-hidden="true"></i><a href="{% url 'order-summary' %}">My Cart</a></li>
+                   {% endif %}
+                </ul>
+
+
+            </div>
+            {% endif %}
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+
+    <div class="footer-copy">
+
+        <div class="container">
+            <p>© 2020 Shree Shyam Silk Mills. All rights reserved | Design by <a href="http://w3layouts.com/">Prince Agarwal</a></p>
+        </div>
+    </div>
+
+</div>
+<div class="footer-botm">
+        <div class="container">
+            <div class="w3layouts-foot">
+                <ul>
+                    <li><a href="#" class="w3_agile_facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                    <li><a href="#" class="agile_twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                    <li><a href="#" class="w3_agile_dribble"><i class="fa fa-dribbble" aria-hidden="true"></i></a></li>
+                    <li><a href="#" class="w3_agile_vimeo"><i class="fa fa-vimeo" aria-hidden="true"></i></a></li>
+                </ul>
+            </div>
+            <div class="payment-w3ls">
+                <img src="{% static 'images/card.png' %}" alt=" " class="img-responsive">
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+<!-- //footer -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="{% static 'js/bootstrap.min.js'"></script>
+<!-- top-header and slider -->
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+
+
+{% block footer_scripts %}
+{% endblock footer_scripts %}
+
+</body>
+</html>

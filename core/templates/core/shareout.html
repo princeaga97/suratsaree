@@ -1,0 +1,206 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+
+{% block content %}
+<!-- breadcrumbs -->
+	<div class="breadcrumbs">
+		<div class="container">
+			<ol class="breadcrumb breadcrumb1">
+				<li><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+				<li class="active">Checkout Page</li>
+			</ol>
+		</div>
+	</div>
+<!-- //breadcrumbs -->
+<!-- checkout -->
+	<div class="checkout">
+		<div class="container">
+			{% if object.items.all %}
+			<h2>Your Share List contains: </h2>
+			<div class="checkout-right">
+					{% for item in object.items.all %}
+					<div class="rem{{forloop.counter}}">
+						<div class="col-md-4 top_brand_left">
+							<div class="hover14 column">
+								<div class="agile_top_brand_left_grid">
+									<div class="agile_top_brand_left_grid1">
+										<figure>
+											<div class="snipcart-item block">
+												<div class="snipcart-thumb">
+													<a href="{% url 'product-detail' object.id %}"><img title=" " alt=" " height="250" width="250" src="{{item.item.image.url}}"></a>
+													<p>{{item.item.slug}}</Object></p>
+
+													<h4>{{item.item.discount_price}} <span>{{item.item.price}}</span></h4>
+												</div>
+
+											</div>
+										</figure>
+									</div>
+									<button style="background-color:blueviolet;color:cornsilk;" class="delete{{forloop.counter}}"> Remove </button>
+								</div>
+
+							</div>
+
+						</div>
+
+
+								</div>
+								{% endfor %}
+								<script>$(document).ready(function(c) {
+									{% for item in object.items.all %}
+									$('.delete{{forloop.counter}}').on('click', function(c){
+
+										$('.rem{{forloop.counter}}').fadeOut('slow', function(c){
+											$('.rem{{forloop.counter}}').remove();
+										});
+										var id = "{{object.id}}";
+										var orderitem = '{{item.id}}';
+										var item = '{{item.item.id}}';
+										updatesharequantity(0,orderitem,id,item);
+										});
+										{% endfor %}
+
+									});
+							   </script>
+
+				{% else %}
+				<h2> Please Add Some Items to Share List </h2>
+				{% endif %}
+			</div>
+			{% if object %}
+				<div class="checkout-right">
+					<div class="checkout-right-basket">
+
+						<a href="{% url 'product-list'  %}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Continue Shopping</a>
+					</div>
+				</div>
+				<div class="checkout-right">
+					<div class="checkout-right-basket">
+
+						<a href="{% url 'share_out_page' object.id %}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Share it Now</a>
+					</div>
+				</div>
+				{% else %}
+				<div class="checkout-right">
+					<div class="checkout-right-basket">
+
+						<a href="{% url 'product-list'  %}"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Continue Shopping</a>
+					</div>
+				</div>
+				{% endif %}
+
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+<!-- //checkout -->
+{% endblock %}
+
+{% block footer_scripts %}
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<!-- top-header and slider -->
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+
+	</script>
+
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.min.js"></script>
+
+<script>
+
+function updatesharequantity(quantity,itemid,orderid,item){
+            var csrftoken = '{{ csrf_token }}';
+            var data = {
+                'quantity': quantity,
+                "csrfmiddlewaretoken": csrftoken ,
+                "item": itemid,
+				"id":orderid,
+			};
+			sharecart = JSON.parse(sessionStorage.getItem('sharecart'));
+			if (sharecart == null)
+			{ sharecart = {};
+			{% if present_share %}
+
+				var present_id = {{present_share.id}};
+				{% for item in present_share.items.all %}
+				sharecart['share' + {{item.item.id}}] = ["{{item.item.slug}}"]
+				sharesum = sharesum +1;
+				{% endfor %}
+				document.getElementById('sharecart').innerHTML = sharesum;
+				{% else %}
+				var sharecart = {};
+				var sharesum = 0;
+				var present_id =0;
+				{% endif %}
+			}
+			else
+			{
+				sharesum = {{ present_share.items.all|length }}
+			}
+			document.getElementById('sharecart').innerHTML = {{ present_share.items.all|length }};
+			console.log(sharecart);
+			if (sharecart["share"+item.toString()]!=null)
+			{
+			console.log(itemid,sharecart["share"+item.toString()]);
+			}
+			delete sharecart['share' + item.toString()];
+			updateshareCart(sharecart);
+            $.post("{% url 'quantityshareupdate' %}", data);
+        }
+
+</script>
+<script>
+	// Mini Cart
+	paypal.minicart.render({
+		action: '#'
+	});
+
+	if (~window.location.search.indexOf('reset=true')) {
+		paypal.minicart.reset();
+	}
+</script>
+<!-- main slider-banner -->
+<script src="js/skdslider.min.js"></script>
+<link href="css/skdslider.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+		jQuery(document).ready(function(){
+			jQuery('#demo1').skdslider({'delay':5000, 'animationSpeed': 2000,'showNextPrev':true,'showPlayButton':true,'autoSlide':true,'animationType':'fading'});
+
+			jQuery('#responsive').change(function(){
+			  $('#responsive_wrapper').width(jQuery(this).val());
+			});
+		});
+
+
+</script>
+
+<script type="text/javascript">
+
+
+	$(document).ready(function(){
+	$('.js-example-basic-single').select2();
+	});
+
+</script>
+{% endblock %}
+<!-- //main slider-banner -->
+

@@ -1,0 +1,85 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- breadcrumbs -->
+	<div class="breadcrumbs">
+		<div class="container">
+			<ol class="breadcrumb breadcrumb1 animated wow slideInLeft" data-wow-delay=".5s">
+				<li><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+				<li class="active">Share_now</li>
+			</ol>
+		</div>
+	</div>
+<!-- //breadcrumbs -->
+<!-- icons -->
+	<div class="w3_wthree_agileits_icons main-grid-border">
+		<div class="container">
+			{% if order_placed %}
+		<h2 class="w3_agile_header">Order_PLaced</h2>
+			<div class="grid_3 grid_4 w3_agileits_icons_page">
+		<div class="icons">
+
+			<section id="new">
+				<h1>Order Placed </h1>
+
+				<h3 class="page-header page-header icon-subheading"> <strong>Congratulations Your Order has been Placed </strong> </h3>
+				<h4>Order Id  : {{ object.id }} </h4>
+				Your Orders
+				<h5> <a style="color: blue;" href="{% url 'order-list' %}"> My Orders </a> </h5>
+			</section>
+			{% elif share_link %}
+			<h2 class="w3_agile_header">Share_list_now</h2>
+			<div class="grid_3 grid_4 w3_agileits_icons_page"></div>
+				<div class="icons">
+
+			<section id="new">
+				<h4 class="page-header page-header icon-subheading"> Shared_user 	: {{Shared_with}}	</h4>
+				<h4 style="color: blue;"><a style="color: blue;" href="https://wa.me/{{Share_list.phone}}?text=*Shree Shyam Silk Mills*  Sharing Products with you   *Login-id* : {{Shared_with}} *Password* : {{Shared_with.password}}"><i class="fa fa-whatsapp-icon"></i> Click Here Share with User Now</a></h4>
+
+				</section>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	</div>
+	<!-- //icons -->
+
+
+{% endblock %}
+{% block footer_scripts %}
+<!-- Bootstrap Core JavaScript -->
+
+<!-- top-header and slider -->
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+
+<!-- //here ends scrolling icon -->
+<script>
+	{% if order_placed %}
+	clearCart();
+	{% endif %}
+
+	{% if share_link %}
+	clearshareCart();
+	{% endif %}
+</script>
+{% endblock %}
+</body>
+</html>
